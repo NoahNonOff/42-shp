@@ -67,7 +67,7 @@ char	*add_char(char *str, char c)
 	return (ret);
 }
 
-char	*read_line(int fd)
+char	*read_one_line(int fd)
 {
 	char	*ret;
 	int		rd_bytes;

@@ -4,6 +4,7 @@ extern t_simul	g_shell;
 
 /*------------- proto ---------------*/
 void	write_prompt(char *prompt);
+void	rd_files_manager(void);
 
 /* ================================= */
 void	write_prompt(char *prompt)
@@ -16,12 +17,50 @@ void	write_prompt(char *prompt)
 	putstr_fd("\x1B[0m ", FDOUT);
 }
 
+void	rd_files_manager(void)
+{
+	int			fd;
+	struct stat	st = {0};
+
+	if (stat(".shp", &st) == -1)
+		mkdir(".shp", 0755);
+	if (access(".shp/.history", F_OK) == -1)
+	{
+		fd = open(".shp/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
+		putstr_fd("EOF", fd);
+		close(fd);
+	}
+}
+
+void	add_history(char *line)
+{
+	int	fd;
+
+	fd = open(".shp/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
+	if (fd == -1)
+		return ;
+	putstr_fd("\n", fd);
+	putstr_fd(line, fd);
+	close(fd);
+}
+
+void	clear_history(void)
+{
+	int	fd;
+
+	fd = open(".shp/.history", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+		return ;
+	close(fd);
+}
+
 char	*readline(char *prompt)
 {
 	char	*ret;
 
 	ret = NULL;
 	write_prompt(prompt);
-	ret = read_line(FDIN);
+	ret = read_one_line(FDIN);
+	rd_files_manager();
 	return (ret);
 }

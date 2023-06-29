@@ -35,13 +35,15 @@ typedef struct
 
 /*---------- readline -------------*/
 char	*readline(char *prompt);
+void	add_history(char *line);
+void	clear_history(void);
 
 /*------------ utils -------------*/
 int		ft_strlen(char *str);
 void	putstr_fd(char *str, int fd);
 void	*free_tab(char **tab);
 int		comp(const char *s1, const char *s2);
-char	*read_line(int fd);
+char	*read_one_line(int fd);
 char	**ft_split(char const *s, char c);
 
 #endif

@@ -3,6 +3,8 @@
 t_simul	g_shell;
 
 /*------------- proto ---------------*/
+int	shell_init(int ac, char **av, char **env);
+int	action(char *str);
 
 /* ================================= */
 
@@ -16,6 +18,24 @@ int	shell_init(int ac, char **av, char **env)
 	return (0);
 }
 
+int	action(char *str)
+{
+	putstr_fd(str, FDIN);
+	putstr_fd("\n", FDIN);
+
+	if (!comp(str, "0"))
+		g_shell.ret = 0;
+	else if (!comp(str, "1"))
+		g_shell.ret = 1;
+	else if (!comp(str, "exit"))
+		return (0);
+	else if (!comp(str, "past"))
+	{
+		// to do
+	}
+	return (1);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	char	*str;
@@ -27,14 +47,9 @@ int	main(int ac, char **av, char **env)
 		str = readline("shell");
 		if (!str)
 			return (-1);
-		putstr_fd(str, FDIN);
-		putstr_fd("\n", FDIN);
-		if (!comp(str, "0"))
-			g_shell.ret = 0;
-		else if (!comp(str, "1"))
-			g_shell.ret = 1;
-		else if (!comp(str, "exit"))
+		if (!action(str))
 			break ;
+		add_history(str);
 		free(str);
 	}
 	free(str);
