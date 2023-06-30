@@ -24,25 +24,40 @@
 #  define FDERR 2
 # endif
 
+// len of shell name + 2 (ex: sh (len = 2) + 2) --> LEN_NAME = 4
+# ifndef LEN_NAME
+#  define LEN_NAME 4
+# endif
+
 /* ========== struct ========== */
 
 typedef struct
 {
-	int	ret;
+	int		ret;
+	char	**env;
+	char	*dir_pos;
 }	t_simul;
 
-/* ========== protos ========== */
+/* ========== protos ========== */			//	(informations about files)
 
-/*---------- readline -------------*/
+/*----------- shell ------------*/			//	(main shell code)
+void	free_glob(void);
+
+/*---------- readline -------------*/		//	(readline functions)
 char	*readline(char *prompt);
 void	add_history(char *line);
 void	clear_history(void);
 
-/*------------ utils -------------*/
+/*------------ funct -------------*/		//	(specified functions)
+char	*p_getenv(char *str, char **tab);
+
+/*------------ utils -------------*/		//	(generic functions)
 int		ft_strlen(char *str);
 void	putstr_fd(char *str, int fd);
 void	*free_tab(char **tab);
 int		comp(const char *s1, const char *s2);
+char	*ft_strdup(char *str);
+char	*substring(char *str, int start, int end);
 char	*read_one_line(int fd);
 char	**ft_split(char const *s, char c);
 

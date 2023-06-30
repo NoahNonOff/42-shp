@@ -47,6 +47,43 @@ int	comp(const char *s1, const char *s2)
 	return (t1[i] - t2[i]);
 }
 
+char	*ft_strdup(char *str)
+{
+	int		len;
+	char	*ret;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	ret = malloc(sizeof(char) * (len + 1));
+	if (!ret)
+		return (NULL);
+	for (int i = 0; str && str[i]; i++)
+		ret[i] = str[i];
+	ret[len] = 0;
+	return (ret);
+}
+
+char	*substring(char *str, int start, int end)
+{
+	int		i;
+	int		len;
+	char	*ret;
+
+	len = ft_strlen(str);
+	if (end == -1)
+		len -= (start);
+	else
+		len -= (len - end) + (start);
+	ret = malloc(sizeof(char) * (len + 1));
+	if (!ret)
+		return (NULL);
+	for (i = 0; str[start + i] && i < len; i++)
+		ret[i] = str[start + i];
+	ret[i] = 0;
+	return (ret);
+}
+
 char	*add_char(char *str, char c)
 {
 	int		len;
@@ -79,7 +116,11 @@ char	*read_one_line(int fd)
 	while (rd_bytes > 0 && buff[0])
 	{
 		if (buff[0] == '\n')
+		{
+			if (!ret)
+				ret = ft_strdup("\n");
 			break ;
+		}
 		ret = add_char(ret, buff[0]);
 		if (!ret)
 			break ;

@@ -22,11 +22,11 @@ void	rd_files_manager(void)
 	int			fd;
 	struct stat	st = {0};
 
-	if (stat(".shp", &st) == -1)
-		mkdir(".shp", 0755);
-	if (access(".shp/.history", F_OK) == -1)
+	if (stat(".42sh", &st) == -1)
+		mkdir(".42sh", 0755);
+	if (access(".42sh/.history", F_OK) == -1)
 	{
-		fd = open(".shp/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
+		fd = open(".42sh/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
 		putstr_fd("EOF", fd);
 		close(fd);
 	}
@@ -36,7 +36,7 @@ void	add_history(char *line)
 {
 	int	fd;
 
-	fd = open(".shp/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
+	fd = open(".42sh/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 		return ;
 	putstr_fd("\n", fd);
@@ -48,7 +48,7 @@ void	clear_history(void)
 {
 	int	fd;
 
-	fd = open(".shp/.history", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	fd = open(".42sh/.history", O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 		return ;
 	close(fd);

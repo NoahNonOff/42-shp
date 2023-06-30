@@ -6,13 +6,14 @@
 #    By: nbeaufil <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/19 15:08:19 by nbeaufil          #+#    #+#              #
-#    Updated: 2023/06/29 18:03:12 by nbeaufil         ###   ########.fr        #
+#    Updated: 2023/06/30 13:03:48 by nbeaufil         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS	=	readline.c		\
 			shell.c			\
-			utils.c
+			utils.c			\
+			funct.c
 
 NAME	=	shp
 OBJS	=	${SRCS:.c=.o}
