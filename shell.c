@@ -44,7 +44,7 @@ int	main(int ac, char **av, char **env)
 		return (2);
 	while (1)
 	{
-		str = readline("shell");
+		str = readline("shp");
 		if (!str)
 			return (-1);
 		if (!action(str))
