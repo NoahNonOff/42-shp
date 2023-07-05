@@ -10,6 +10,8 @@
 # include <sys/wait.h>
 # include <fcntl.h>
 # include <stdarg.h>
+# include <termios.h>
+# include <curses.h>
 
 /* ========== define ========== */
 # ifndef FDIN
@@ -38,6 +40,15 @@ typedef struct
 	char	*dir_pos;
 }	t_simul;
 
+typedef struct
+{
+	int		begin_pos; // LEN_NAME + 3
+	int		cursor;
+	char	*line;
+	int		flx;
+	FILE	*flux;
+}	t_readline;
+
 /* ========== protos ========== */
 
 /*----------- shell ------------*/
@@ -56,6 +67,7 @@ char	*read_first_line(FILE *flux);
 /*------------ funct -------------*/
 char	*p_getenv(char *str, char **tab);
 char	*cat_line(char *line, int pos, char c);
+char	*remove_one(char *line, int pos);
 
 /*------------ utils -------------*/
 int		ft_strlen(char *str);

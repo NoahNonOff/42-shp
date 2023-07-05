@@ -3,8 +3,13 @@
 extern t_simul	g_shell;
 
 /*------------- proto ---------------*/
-void	write_prompt(char *prompt);
-void	rd_files_manager(void);
+void		write_prompt(char *prompt);
+void		rd_files_manager(void);
+t_readline	readline_init(void);
+char		extract_char(void);
+void		do_backspace(t_readline *rdl);
+void		move_cursor(t_readline *rdl);
+void		treat_char(char c, t_readline *rdl);
 
 /* ================================= */
 void	write_prompt(char *prompt)
@@ -53,14 +58,104 @@ void	clear_history(void)
 	close(fd);
 }
 
+t_readline	readline_init(void)
+{
+	t_readline	ret;
+
+	ret.begin_pos = LEN_NAME + 3;
+	ret.cursor = 0;
+	ret.line = NULL;
+	ret.flx = 0;
+	ret.flux = NULL;
+	return (ret);
+}
+
+char	extract_char(void)
+{
+	char	c;
+	struct termios	oldt;
+	struct termios	newt;
+
+	tcgetattr(STDIN_FILENO, &oldt);
+	newt = oldt;
+
+	newt.c_lflag &= ~(ICANON | ECHO);
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	c = getchar();
+	if (c == '\033')
+	{
+		getchar(); // skip the '['
+		switch (getchar())
+		{
+			case 'A':
+				c = -1;
+				break;
+			case 'B':
+				c = -2;
+				break;
+			case 'C':
+				c = -3;
+				break;
+			case 'D':
+				c = -4;
+				break;
+		}
+	}
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+	return (c);
+}
+
+void	do_backspace(t_readline *rdl)
+{
+	rdl->line = remove_one(rdl->line, rdl->cursor);
+	if (rdl->cursor > 0)
+		rdl->cursor--;
+}
+
+void	move_cursor(t_readline *rdl)
+{
+	int	move;
+
+	move = ft_strlen(rdl->line) - rdl->cursor;
+	for (int i = 0; i < move; i++)
+		printf("\033[1D");
+	fflush(stdout);
+}
+
+void	treat_char(char c, t_readline *rdl)
+{
+	if (c == -1) // up
+		(void)c; // do something
+	else if (c == -2) // down
+		(void)c; // do something
+	else if (c == -3 && (rdl->cursor < ft_strlen(rdl->line))) // right
+		rdl->cursor++;
+	else if (c == -4 && rdl->cursor > 0) // left
+		rdl->cursor--;
+	else if (c == 127)
+		do_backspace(rdl);
+	else if (c > 0)
+		rdl->line = cat_line(rdl->line, rdl->cursor++, c);
+	write(1, "\0338", 2);
+	write(1, "\033[K", 3);
+	putstr_fd(rdl->line, FDIN);
+	move_cursor(rdl);
+}
+
 char	*readline(char *prompt)
 {
-	char	*ret;
+	char		c;
+	t_readline	rdl;
 
-	ret = NULL;
+	rdl = readline_init();
 	write_prompt(prompt);
-	printf("\0337"); // save current state
-	ret = read_one_line(FDIN);
+	write(1, "\0337", 2);
+	while ((c = extract_char()) && c != '\n')
+		treat_char(c, &rdl);
 	rd_files_manager();
-	return (ret);
+	if (rdl.flx)
+		fclose(rdl.flux);
+	write(1, "\n", 1);
+	return (rdl.line);
 }
