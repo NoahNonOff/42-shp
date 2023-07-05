@@ -55,6 +55,7 @@ char	*read_first_line(FILE *flux);
 
 /*------------ funct -------------*/
 char	*p_getenv(char *str, char **tab);
+char	*cat_line(char *line, int pos, char c);
 
 /*------------ utils -------------*/
 int		ft_strlen(char *str);

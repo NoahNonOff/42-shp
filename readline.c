@@ -59,6 +59,7 @@ char	*readline(char *prompt)
 
 	ret = NULL;
 	write_prompt(prompt);
+	printf("\0337"); // save current state
 	ret = read_one_line(FDIN);
 	rd_files_manager();
 	return (ret);
