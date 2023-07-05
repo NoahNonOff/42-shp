@@ -1,12 +1,13 @@
-#include "shell.h"
+# include <stdio.h>
+# include <fcntl.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <errno.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <stdint.h>
 
-/*------------- proto ---------------*/
 char	past_char(FILE *flux, int mode);
-char	next_char(FILE *flux, int mode);
-int	getidx_past_line(FILE *flux);
-int	getidx_next_line(FILE *flux);
-
-/* ================================= */
 
 FILE	*new_flux(char *name, char *mode)
 {
@@ -66,14 +67,16 @@ int	getidx_past_line(FILE *flux)
 {
 	char	c;
 	int		size;
+	char	buff[2] = {0};
+	long	pos;
 
 	size = 0;
-	while ((c = past_char(flux, 0)) != '\n' && c > 0)
+	while ((c = past_char(flux, 0)) != '\n' && c > 0) // on sort de la ligne actuelle
 		past_char(flux, 1);
 	if (c != '\n')
 		return (0);
-	past_char(flux, 1);
-	while ((c = past_char(flux, 0)) != '\n' && c > 0)
+	past_char(flux, 1); // on passe apres le '\n'
+	while ((c = past_char(flux, 0)) != '\n' && c > 0) // on lit la ligne (jusqu'au bout ou '\n')
 	{
 		size++;
 		past_char(flux, 1);
@@ -85,16 +88,17 @@ int	getidx_next_line(FILE *flux)
 {
 	char	c;
 	int		size;
+	char	buff[2] = {0};
 	long	pos;
 
 	size = 0;
-	while ((c = next_char(flux, 0)) != '\n' && c > 0)
+	while ((c = next_char(flux, 0)) != '\n' && c > 0) // on sort de la ligne actuelle
 		next_char(flux, 1);
 	if (c != '\n')
 		return (0);
-	next_char(flux, 1);
+	next_char(flux, 1); // on passe apres le '\n'
 	pos = ftell(flux);
-	while ((c = next_char(flux, 0)) != '\n' && c > 0)
+	while ((c = next_char(flux, 0)) != '\n' && c > 0) // on lit la ligne (jusqu'au bout ou '\n')
 	{
 		size++;
 		next_char(flux, 1);
@@ -147,4 +151,39 @@ char	*read_first_line(FILE *flux)
 		line[i] = next_char(flux, 0);
 	line[i] = 0;
 	return (line);
+}
+
+int	main(int ac, char **av)
+{
+	FILE	*flux;
+	char	*ln;
+	char	c;
+
+	if (ac != 2)
+		return (0);
+
+	flux = new_flux(av[1], "a+");
+	if (!flux)
+		return (-1);
+	
+	ln = read_first_line(flux);
+	printf("first line is $%s$\n", ln);
+	free(ln);
+
+	for (int i = 0; i < 5; i++)
+	{
+		ln = line_from_stream(flux, 1);
+		printf("ln.%d $%s$\n", i, ln);
+		free(ln);
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		ln = line_from_stream(flux, 0);
+		printf("ln.%d $%s$\n", i, ln);
+		free(ln);
+	}
+
+	fclose(flux);
+	return (0);
 }

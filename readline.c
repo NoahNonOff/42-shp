@@ -27,7 +27,6 @@ void	rd_files_manager(void)
 	if (access(".42sh/.history", F_OK) == -1)
 	{
 		fd = open(".42sh/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
-		putstr_fd("EOF", fd);
 		close(fd);
 	}
 }

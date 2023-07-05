@@ -38,20 +38,25 @@ typedef struct
 	char	*dir_pos;
 }	t_simul;
 
-/* ========== protos ========== */			//	(informations about files)
+/* ========== protos ========== */
 
-/*----------- shell ------------*/			//	(main shell code)
+/*----------- shell ------------*/
 void	free_glob(void);
 
-/*---------- readline -------------*/		//	(readline functions)
+/*---------- readline -------------*/
 char	*readline(char *prompt);
 void	add_history(char *line);
 void	clear_history(void);
 
-/*------------ funct -------------*/		//	(specified functions)
+/*--------- read_history ----------*/
+FILE	*new_flux(char *name, char *mode);
+char	*line_from_stream(FILE *flux, int mode);
+char	*read_first_line(FILE *flux);
+
+/*------------ funct -------------*/
 char	*p_getenv(char *str, char **tab);
 
-/*------------ utils -------------*/		//	(generic functions)
+/*------------ utils -------------*/
 int		ft_strlen(char *str);
 void	putstr_fd(char *str, int fd);
 void	*free_tab(char **tab);
