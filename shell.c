@@ -88,7 +88,7 @@ int	action(char *str)
 			printf("%s\n", g_shell.env[i]);
 	}
 	else if (!comp(str, "sound"))
-		write(1, "\x07", 1);
+		write(0, "\x07", 1);
 	else if (!comp(str, "clear"))
 		write(1, "\033c", 2);
 	return (1);
