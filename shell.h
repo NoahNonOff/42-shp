@@ -58,11 +58,13 @@ void	free_glob(void);
 char	*readline(char *prompt);
 void	add_history(char *line);
 void	clear_history(void);
+void	close_flux(t_readline *rdl);
 
 /*--------- read_history ----------*/
 FILE	*new_flux(char *name, char *mode);
 char	*line_from_stream(FILE *flux, int mode);
 char	*read_first_line(FILE *flux);
+void	find_in_index(t_readline *rdl, int mode);
 
 /*------------ funct -------------*/
 char	*p_getenv(char *str, char **tab);

@@ -55,6 +55,8 @@ char	*remove_one(char *line, int pos)
 	char	*newline;
 
 	i = 0;
+	if (pos == 0)
+		return (line);
 	len = ft_strlen(line);
 	if (pos > len)
 		pos = len;

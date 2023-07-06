@@ -111,6 +111,7 @@ void	do_backspace(t_readline *rdl)
 	rdl->line = remove_one(rdl->line, rdl->cursor);
 	if (rdl->cursor > 0)
 		rdl->cursor--;
+	close_flux(rdl);
 }
 
 void	move_cursor(t_readline *rdl)
@@ -123,12 +124,20 @@ void	move_cursor(t_readline *rdl)
 	fflush(stdout);
 }
 
+void	close_flux(t_readline *rdl)
+{
+		if (rdl->flx)
+			fclose(rdl->flux);
+		rdl->flux = NULL;
+		rdl->flx = 0;
+}
+
 void	treat_char(char c, t_readline *rdl)
 {
 	if (c == -1) // up
-		(void)c; // do something
+		find_in_index(rdl, 1);
 	else if (c == -2) // down
-		(void)c; // do something
+		find_in_index(rdl, 0);
 	else if (c == -3 && (rdl->cursor < ft_strlen(rdl->line))) // right
 		rdl->cursor++;
 	else if (c == -4 && rdl->cursor > 0) // left
@@ -136,7 +145,10 @@ void	treat_char(char c, t_readline *rdl)
 	else if (c == 127)
 		do_backspace(rdl);
 	else if (c > 0)
+	{
 		rdl->line = cat_line(rdl->line, rdl->cursor++, c);
+		close_flux(rdl);
+	}
 	write(1, "\0338", 2);
 	write(1, "\033[K", 3);
 	putstr_fd(rdl->line, FDIN);
@@ -149,13 +161,13 @@ char	*readline(char *prompt)
 	t_readline	rdl;
 
 	rdl = readline_init();
+	rd_files_manager();
 	write_prompt(prompt);
 	write(1, "\0337", 2);
 	while ((c = extract_char()) && c != '\n')
 		treat_char(c, &rdl);
 	rd_files_manager();
-	if (rdl.flx)
-		fclose(rdl.flux);
+	close_flux(&rdl);
 	write(1, "\n", 1);
 	return (rdl.line);
 }

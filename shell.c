@@ -94,6 +94,17 @@ int	action(char *str)
 	return (1);
 }
 
+int	history_string(char *str)
+{
+	int	space;
+
+	space = 0;
+	for (int i = 0; str && str[i]; i++)
+		if (!((str[i] >= 9 && str[i] <= 13) || str[i] == ' '))
+			space++;
+	return (space);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	char	*str;
@@ -104,12 +115,13 @@ int	main(int ac, char **av, char **env)
 	{
 		str = readline("sh");
 		if (!str)
-			return (-1);
+			continue ;
 		if (comp(str, "\n"))
 		{
 			if (!action(str))
 				break ;
-			add_history(str);
+			if (history_string(str))
+				add_history(str);
 		}
 		free(str);
 	}

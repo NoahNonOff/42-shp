@@ -104,8 +104,8 @@ int	getidx_next_line(FILE *flux)
 }
 
 // mode:
-// 0 = next line
-// 1 = past line
+// 0 = next line (down)
+// 1 = past line (up)
 char	*line_from_stream(FILE *flux, int mode)
 {
 	int		i;
@@ -147,4 +147,32 @@ char	*read_first_line(FILE *flux)
 		line[i] = next_char(flux, 0);
 	line[i] = 0;
 	return (line);
+}
+
+void	find_in_index(t_readline *rdl, int mode)
+{
+	char	*str;
+
+	if (!rdl->flx && mode)
+	{
+		rdl->flux = new_flux(".42sh/.history", "a+");
+		rdl->flx = 1;
+		str = read_first_line(rdl->flux);
+		if (str)
+		{
+			free(rdl->line);
+			rdl->line = str;
+		}
+	}
+	else if (rdl->flux)
+	{
+		str = line_from_stream(rdl->flux, mode);
+		if (str || (!str && !mode))
+		{
+			free(rdl->line);
+			rdl->line = str;
+			if (!str)
+				close_flux(rdl);
+		}
+	}
 }
