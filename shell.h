@@ -65,6 +65,7 @@ FILE	*new_flux(char *name, char *mode);
 char	*line_from_stream(FILE *flux, int mode);
 char	*read_first_line(FILE *flux);
 void	find_in_index(t_readline *rdl, int mode);
+int		is_past_command(char *cmd);
 
 /*------------ funct -------------*/
 char	*p_getenv(char *str, char **tab);

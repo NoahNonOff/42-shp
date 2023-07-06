@@ -176,3 +176,23 @@ void	find_in_index(t_readline *rdl, int mode)
 		}
 	}
 }
+
+int	is_past_command(char *cmd)
+{
+	int		ret;
+	FILE	*flux;
+	char	*past_cmd;
+
+	ret = 1;
+	flux = new_flux(".42sh/.history", "a+");
+	if (!flux)
+		return (0);
+	past_cmd = read_first_line(flux);
+	fclose(flux);
+	if (!past_cmd)
+		return (0);
+	if (comp(past_cmd, cmd))
+		ret = 0;
+	free(past_cmd);
+	return (ret);
+}

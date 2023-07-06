@@ -96,13 +96,17 @@ int	action(char *str)
 
 int	history_string(char *str)
 {
-	int	space;
+	int	chr;
 
-	space = 0;
+	chr = 0;
 	for (int i = 0; str && str[i]; i++)
 		if (!((str[i] >= 9 && str[i] <= 13) || str[i] == ' '))
-			space++;
-	return (space);
+			chr++;
+	if (!chr)
+		return (0);
+	if (is_past_command(str))
+		return (0);
+	return (1);
 }
 
 int	main(int ac, char **av, char **env)

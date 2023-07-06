@@ -43,8 +43,8 @@ void	add_history(char *line)
 	fd = open(".42sh/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 		return ;
-	putstr_fd("\n", fd);
 	putstr_fd(line, fd);
+	putstr_fd("\n", fd);
 	close(fd);
 }
 
