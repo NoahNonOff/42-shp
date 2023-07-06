@@ -7,6 +7,7 @@ void		write_prompt(char *prompt);
 void		rd_files_manager(void);
 t_readline	readline_init(void);
 char		extract_char(void);
+void		do_delete(t_readline *rdl);
 void		do_backspace(t_readline *rdl);
 void		move_cursor(t_readline *rdl);
 void		treat_char(char c, t_readline *rdl);
@@ -100,10 +101,22 @@ char	extract_char(void)
 			case 'D':
 				c = -4;
 				break;
+			case '3':
+				if (getchar() == '~')
+					c = -5;
+				break ;
 		}
 	}
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 	return (c);
+}
+
+void	do_delete(t_readline *rdl)
+{
+	if (ft_strlen(rdl->line) <= rdl->cursor)
+		return ;
+	rdl->line = remove_one(rdl->line, rdl->cursor + 1);
+	close_flux(rdl);
 }
 
 void	do_backspace(t_readline *rdl)
@@ -142,6 +155,8 @@ void	treat_char(char c, t_readline *rdl)
 		rdl->cursor++;
 	else if (c == -4 && rdl->cursor > 0) // left
 		rdl->cursor--;
+	else if (c == -5)
+		do_delete(rdl);
 	else if (c == 127)
 		do_backspace(rdl);
 	else if (c > 0)
