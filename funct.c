@@ -71,3 +71,23 @@ char	*remove_one(char *line, int pos)
 	free(line);
 	return (newline);
 }
+
+char	*path_join(char const *s1, char const *s2)
+{
+	int		i, len1, len2;
+	char	*ret;
+
+	i = -1;
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
+	ret = malloc(sizeof(char) * (len1 + len2 + 1));
+	if (!ret)
+		return (NULL);
+	while (++i < len1)
+		ret[i] = s1[i];
+	i = -1;
+	while (++i < len2)
+		ret[len1 + i] = s2[i];
+	ret[len1 + len2] = 0;
+	return (ret);
+}

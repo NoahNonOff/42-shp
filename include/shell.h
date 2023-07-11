@@ -1,5 +1,5 @@
-#ifndef __READLINE__H__
-# define __READLINE__H__
+#ifndef __SHELL__H__
+# define __SHELL__H__
 
 /* ========== includes ========== */
 # include <stdio.h>
@@ -71,6 +71,10 @@ int		is_past_command(char *cmd);
 char	*p_getenv(char *str, char **tab);
 char	*cat_line(char *line, int pos, char c);
 char	*remove_one(char *line, int pos);
+
+/*------------ utils -------------*/
+char	*try_path(char *cmd, char **env);
+char	*get_path(char *cmd, char **env);
 
 /*------------ utils -------------*/
 int		ft_strlen(char *str);

@@ -6,27 +6,28 @@
 #    By: nbeaufil <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/19 15:08:19 by nbeaufil          #+#    #+#              #
-#    Updated: 2023/07/05 06:14:54 by nbeaufil         ###   ########.fr        #
+#    Updated: 2023/07/11 14:58:31 by nbeaufil         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS	=	shell.c				\
-			utils.c				\
-			funct.c				\
-			readline.c			\
-			read_history.c
+SRCS	=	shell.c							\
+			utils.c							\
+			funct.c							\
+			readline/readline.c				\
+			readline/read_history.c
 
-NAME	=	shp
+NAME	=	sh
 OBJS	=	${SRCS:.c=.o}
 DEBUG	=
 CC		=	gcc
 FLAGS	=	-Wall -Wextra -Werror
+INCLUDE	=	-I include
 
 .c.o	:
-	${CC} ${FLAGS} ${INCLUDE} ${DEBUG} -c $<
+	${CC} ${FLAGS} ${INCLUDE} ${DEBUG} -c $< -o ${<:.c=.o}
 
 $(NAME)	:	${OBJS}
-	${CC} -o ${NAME} ${FLAGS} ${OBJS}
+	${CC} -o ${NAME} ${INCLUDE} ${FLAGS} ${OBJS}
 
 all	:	${NAME}
 
