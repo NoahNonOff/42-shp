@@ -1,3 +1,3 @@
-# 42-shp
-I'm re-creating a shell
-I'm working on it ... (README will arrive soon)<br><br>Date: Jui-02-2023
+# Readline
+library readline without leaks<br>
+I'm working on it ...<br><br>Date: Jul-19-2023
