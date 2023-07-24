@@ -1,25 +1,25 @@
 #include "readline.h"
 
 /*------------- proto ---------------*/
-void		write_prompt(char *prompt, int ret);
+void		rd_write_prompt(char *prompt, int ret);
 void		rd_files_manager(void);
-t_readline	readline_init(char *prompt);
-char		extract_char(void);
-void		do_delete(t_readline *rdl);
-void		do_backspace(t_readline *rdl);
-void		move_cursor(t_readline *rdl);
-void		treat_char(char c, t_readline *rdl);
+t_readline	rd_readline_init(char *prompt);
+char		rd_extract_char(void);
+void		rd_do_delete(t_readline *rdl);
+void		rd_do_backspace(t_readline *rdl);
+void		rd_move_cursor(t_readline *rdl);
+void		rd_treat_char(char c, t_readline *rdl);
 
 /* ================================= */
-void	write_prompt(char *prompt, int ret)
+void	rd_write_prompt(char *prompt, int ret)
 {
 	if (!ret)
-		putstr_fd("\x1B[1m\x1B[32m➜  \x1B[36m", FDOUT);
+		rd_putstr_fd("\x1B[1m\x1B[32m➜  \x1B[36m", FDOUT);
 	else
-		putstr_fd("\x1B[1m\x1B[31m➜  \x1B[36m", FDOUT);
+		rd_putstr_fd("\x1B[1m\x1B[31m➜  \x1B[36m", FDOUT);
 	if (prompt)
-		putstr_fd(prompt, FDOUT);
-	putstr_fd("\x1B[0m ", FDOUT);
+		rd_putstr_fd(prompt, FDOUT);
+	rd_putstr_fd("\x1B[0m ", FDOUT);
 }
 
 void	rd_files_manager(void)
@@ -44,8 +44,8 @@ void	add_history(char *line)
 	fd = open(".rdlrc/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 		return ;
-	putstr_fd(line, fd);
-	putstr_fd("\n", fd);
+	rd_putstr_fd(line, fd);
+	rd_putstr_fd("\n", fd);
 	close(fd);
 }
 
@@ -59,14 +59,14 @@ void	clear_history(void)
 	close(fd);
 }
 
-t_readline	readline_init(char *prompt)
+t_readline	rd_readline_init(char *prompt)
 {
 	t_readline	ret;
 
 	if (!prompt)
 		ret.begin_pos = 3;
 	else
-		ret.begin_pos = ft_strlen(prompt) + 3;
+		ret.begin_pos = rd_strlen(prompt) + 3;
 	ret.cursor = 0;
 	ret.line = NULL;
 	ret.flx = 0;
@@ -74,7 +74,7 @@ t_readline	readline_init(char *prompt)
 	return (ret);
 }
 
-char	extract_char(void)
+char	rd_extract_char(void)
 {
 	char	c;
 	struct termios	oldt;
@@ -114,33 +114,32 @@ char	extract_char(void)
 	return (c);
 }
 
-void	do_delete(t_readline *rdl)
+void	rd_do_delete(t_readline *rdl)
 {
-	if (ft_strlen(rdl->line) <= rdl->cursor)
+	if (rd_strlen(rdl->line) <= rdl->cursor)
 		return ;
-	rdl->line = remove_one(rdl->line, rdl->cursor + 1);
-	close_flux(rdl);
+	rdl->line = rd_remove_one(rdl->line, rdl->cursor + 1);
+	rd_close_flux(rdl);
 }
 
-void	do_backspace(t_readline *rdl)
+void	rd_do_backspace(t_readline *rdl)
 {
-	rdl->line = remove_one(rdl->line, rdl->cursor);
+	rdl->line = rd_remove_one(rdl->line, rdl->cursor);
 	if (rdl->cursor > 0)
 		rdl->cursor--;
-	close_flux(rdl);
+	rd_close_flux(rdl);
 }
 
-void	move_cursor(t_readline *rdl)
+void	rd_move_cursor(t_readline *rdl)
 {
 	int	move;
 
-	move = ft_strlen(rdl->line) - rdl->cursor;
+	move = rd_strlen(rdl->line) - rdl->cursor;
 	for (int i = 0; i < move; i++)
 		write(1, "\033[1D", 4);
-	fflush(stdout);
 }
 
-void	close_flux(t_readline *rdl)
+void	rd_close_flux(t_readline *rdl)
 {
 		if (rdl->flx)
 			fclose(rdl->flux);
@@ -148,29 +147,29 @@ void	close_flux(t_readline *rdl)
 		rdl->flx = 0;
 }
 
-void	treat_char(char c, t_readline *rdl)
+void	rd_treat_char(char c, t_readline *rdl)
 {
 	if (c == -1) // up
-		find_in_index(rdl, 1);
+		rd_find_in_index(rdl, 1);
 	else if (c == -2) // down
-		find_in_index(rdl, 0);
-	else if (c == -3 && (rdl->cursor < ft_strlen(rdl->line))) // right
+		rd_find_in_index(rdl, 0);
+	else if (c == -3 && (rdl->cursor < rd_strlen(rdl->line))) // right
 		rdl->cursor++;
 	else if (c == -4 && rdl->cursor > 0) // left
 		rdl->cursor--;
 	else if (c == -5)
-		do_delete(rdl);
+		rd_do_delete(rdl);
 	else if (c == 127)
-		do_backspace(rdl);
+		rd_do_backspace(rdl);
 	else if (c > 0)
 	{
-		rdl->line = cat_line(rdl->line, rdl->cursor++, c);
-		close_flux(rdl);
+		rdl->line = rd_cat_line(rdl->line, rdl->cursor++, c);
+		rd_close_flux(rdl);
 	}
 	write(1, "\0338", 2);
 	write(1, "\033[K", 3);
-	putstr_fd(rdl->line, FDIN);
-	move_cursor(rdl);
+	rd_putstr_fd(rdl->line, FDIN);
+	rd_move_cursor(rdl);
 }
 
 char	*readline(char *prompt, int ret)
@@ -179,12 +178,12 @@ char	*readline(char *prompt, int ret)
 	t_readline	rdl;
 
 	rd_files_manager();
-	rdl = readline_init(prompt);
-	write_prompt(prompt, ret);
+	rdl = rd_readline_init(prompt);
+	rd_write_prompt(prompt, ret);
 	write(1, "\0337", 2);
-	while ((c = extract_char()) && c != '\n')
-		treat_char(c, &rdl);
-	close_flux(&rdl);
+	while ((c = rd_extract_char()) && c != '\n')
+		rd_treat_char(c, &rdl);
+	rd_close_flux(&rdl);
 	write(1, "\n", 1);
 	return (rdl.line);
 }

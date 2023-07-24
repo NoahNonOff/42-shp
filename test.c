@@ -2,18 +2,18 @@
 
 int	action(char *str, int *ret)
 {
-	putstr_fd(str, FDIN);
-	putstr_fd("\n", FDIN);
+	rd_putstr_fd(str, FDIN);
+	rd_putstr_fd("\n", FDIN);
 
-	if (!comp(str, "0"))
+	if (!rd_comp(str, "0"))
 		*ret = 0;
-	else if (!comp(str, "1"))
+	else if (!rd_comp(str, "1"))
 		*ret = 1;
-	else if (!comp(str, "exit"))
+	else if (!rd_comp(str, "exit"))
 		return (0);
-	else if (!comp(str, "sound"))
+	else if (!rd_comp(str, "sound"))
 		write(0, "\x07", 1);
-	else if (!comp(str, "clear"))
+	else if (!rd_comp(str, "clear"))
 		write(1, "\033c", 2);
 	return (1);
 }
@@ -28,7 +28,7 @@ int	history_string(char *str)
 			chr++;
 	if (!chr)
 		return (0);
-	if (is_past_command(str))
+	if (rd_is_past_command(str))
 		return (0);
 	return (1);
 }
@@ -43,7 +43,7 @@ int	main(void)
 		str = readline("test", ret);
 		if (!str)
 			continue ;
-		if (comp(str, "\n"))
+		if (rd_comp(str, "\n"))
 		{
 			if (!action(str, &ret))
 				break ;

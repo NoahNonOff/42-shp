@@ -4,14 +4,14 @@
 
 /* ================================= */
 
-char	*cat_line(char *line, int pos, char c)
+char	*rd_cat_line(char *line, int pos, char c)
 {
 	int		i;
 	int		len;
 	char	*newline;
 
 	i = 0;
-	len = ft_strlen(line);
+	len = rd_strlen(line);
 	if (pos > len)
 		pos = len;
 	newline = malloc(sizeof(char) * (len + 2));
@@ -27,7 +27,7 @@ char	*cat_line(char *line, int pos, char c)
 	return (newline);
 }
 
-char	*remove_one(char *line, int pos)
+char	*rd_remove_one(char *line, int pos)
 {
 	int		i;
 	int		len;
@@ -36,7 +36,7 @@ char	*remove_one(char *line, int pos)
 	i = 0;
 	if (pos == 0)
 		return (line);
-	len = ft_strlen(line);
+	len = rd_strlen(line);
 	if (pos > len)
 		pos = len;
 	newline = malloc(sizeof(char) * (len));

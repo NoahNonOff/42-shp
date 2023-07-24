@@ -1,11 +1,11 @@
 #include "readline.h"
 
 /*------------- proto ---------------*/
-char	*add_char(char *str, char c);
+char	*rd_add_char(char *str, char c);
 
 /* ================================= */
 
-int	ft_strlen(char *str)
+int	rd_strlen(char *str)
 {
 	int	i;
 
@@ -15,7 +15,7 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
-void	putstr_fd(char *str, int fd)
+void	rd_putstr_fd(char *str, int fd)
 {
 	if (!str || fcntl(fd, F_GETFD) == -1)
 		return ;
@@ -23,7 +23,7 @@ void	putstr_fd(char *str, int fd)
 		write(fd, &str[i], 1);
 }
 
-void	*free_tab(char **tab)
+void	*rd_free_tab(char **tab)
 {
 	for (int i = 0; tab && tab[i]; i++)
 		free(tab[i]);
@@ -31,7 +31,7 @@ void	*free_tab(char **tab)
 	return (NULL);
 }
 
-int	comp(const char *s1, const char *s2)
+int	rd_comp(const char *s1, const char *s2)
 {
 	size_t			i;
 	unsigned char	*t1;
@@ -47,14 +47,14 @@ int	comp(const char *s1, const char *s2)
 	return (t1[i] - t2[i]);
 }
 
-char	*ft_strdup(char *str)
+char	*rd_strdup(char *str)
 {
 	int		len;
 	char	*ret;
 
 	if (!str)
 		return (NULL);
-	len = ft_strlen(str);
+	len = rd_strlen(str);
 	ret = malloc(sizeof(char) * (len + 1));
 	if (!ret)
 		return (NULL);
@@ -64,13 +64,13 @@ char	*ft_strdup(char *str)
 	return (ret);
 }
 
-char	*substring(char *str, int start, int end)
+char	*rd_substring(char *str, int start, int end)
 {
 	int		i;
 	int		len;
 	char	*ret;
 
-	len = ft_strlen(str);
+	len = rd_strlen(str);
 	if (end == -1)
 		len -= (start);
 	else
@@ -84,12 +84,12 @@ char	*substring(char *str, int start, int end)
 	return (ret);
 }
 
-char	*add_char(char *str, char c)
+char	*rd_add_char(char *str, char c)
 {
 	int		len;
 	char	*ret;
 
-	len = ft_strlen(str) + 2;
+	len = rd_strlen(str) + 2;
 	ret = malloc(sizeof(char) * len);
 	if (!ret)
 	{
@@ -104,7 +104,7 @@ char	*add_char(char *str, char c)
 	return (ret);
 }
 
-char	*read_one_line(int fd)
+char	*rd_read_one_line(int fd)
 {
 	char	*ret;
 	int		rd_bytes;
@@ -118,10 +118,10 @@ char	*read_one_line(int fd)
 		if (buff[0] == '\n')
 		{
 			if (!ret)
-				ret = ft_strdup("\n");
+				ret = rd_strdup("\n");
 			break ;
 		}
-		ret = add_char(ret, buff[0]);
+		ret = rd_add_char(ret, buff[0]);
 		if (!ret)
 			break ;
 		rd_bytes = read(fd, buff, 1);

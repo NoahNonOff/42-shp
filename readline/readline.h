@@ -43,27 +43,26 @@ typedef struct
 char	*readline(char *prompt, int ret);
 void	add_history(char *line);
 void	clear_history(void);
-void	close_flux(t_readline *rdl);
+void	rd_close_flux(t_readline *rdl);
 
 /*--------- read_history ----------*/
-FILE	*new_flux(char *name, char *mode);
-char	*line_from_stream(FILE *flux, int mode);
-char	*read_first_line(FILE *flux);
-void	find_in_index(t_readline *rdl, int mode);
-int		is_past_command(char *cmd);
+FILE	*rd_new_flux(char *name, char *mode);
+char	*rd_line_from_stream(FILE *flux, int mode);
+char	*rd_read_first_line(FILE *flux);
+void	rd_find_in_index(t_readline *rdl, int mode);
+int		rd_is_past_command(char *cmd);
 
 /*------------ funct -------------*/
-char	*p_getenv(char *str, char **tab);
-char	*cat_line(char *line, int pos, char c);
-char	*remove_one(char *line, int pos);
+char	*rd_cat_line(char *line, int pos, char c);
+char	*rd_remove_one(char *line, int pos);
 
 /*------------ utils -------------*/
-int		ft_strlen(char *str);
-void	putstr_fd(char *str, int fd);
-void	*free_tab(char **tab);
-int		comp(const char *s1, const char *s2);
-char	*ft_strdup(char *str);
-char	*substring(char *str, int start, int end);
-char	*read_one_line(int fd);
+int		rd_strlen(char *str);
+void	rd_putstr_fd(char *str, int fd);
+void	*rd_free_tab(char **tab);
+int		rd_comp(const char *s1, const char *s2);
+char	*rd_strdup(char *str);
+char	*rd_substring(char *str, int start, int end);
+char	*rd_read_one_line(int fd);
 
 #endif
