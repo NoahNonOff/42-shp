@@ -149,6 +149,7 @@ void	rd_close_flux(t_readline *rdl)
 
 void	rd_treat_char(char c, t_readline *rdl)
 {
+	write(1, "\0338", 2);
 	if (c == -1) // up
 		rd_find_in_index(rdl, 1);
 	else if (c == -2) // down
@@ -161,12 +162,13 @@ void	rd_treat_char(char c, t_readline *rdl)
 		rd_do_delete(rdl);
 	else if (c == 127)
 		rd_do_backspace(rdl);
+	else if (c == '\t')
+		rd_auto_compl(rdl);
 	else if (c > 0)
 	{
 		rdl->line = rd_cat_line(rdl->line, rdl->cursor++, c);
 		rd_close_flux(rdl);
 	}
-	write(1, "\0338", 2);
 	write(1, "\033[K", 3);
 	rd_putstr_fd(rdl->line, FDIN);
 	rd_move_cursor(rdl);
@@ -181,9 +183,14 @@ char	*readline(char *prompt, int ret)
 	rdl = rd_readline_init(prompt);
 	rd_write_prompt(prompt, ret);
 	write(1, "\0337", 2);
+	rd_putstr_fd("\033[s", FDIN);
 	while ((c = rd_extract_char()) && c != '\n')
 		rd_treat_char(c, &rdl);
 	rd_close_flux(&rdl);
+
+	for (;rdl.cursor < rd_strlen(rdl.line); rdl.cursor++)
+		rd_putstr_fd("\033[1C", FDIN);
+	rd_putstr_fd("\033[J", 1);
 	write(1, "\n", 1);
 	return (rdl.line);
 }

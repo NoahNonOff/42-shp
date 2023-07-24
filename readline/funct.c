@@ -63,11 +63,12 @@ char	**rd_tabPush(char **tab, char *to_add)
 	if (!ret)
 		return (rd_free_tab(tab));
 	len = 0;
-	while (tab && tab[len])
+	while (tab && tab[len]) {
 		ret[len] = tab[len];
+		len++;
+	}
 	ret[len] = rd_strdup(to_add);
-	if (!ret[len++])
-	{
+	if (!ret[len++]) {
 		free(ret);
 		return (rd_free_tab(tab));
 	}

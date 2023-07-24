@@ -71,6 +71,6 @@ char	*rd_read_one_line(int fd);
 
 /*---------- auto_compl ----------*/ /*      [beta]      */
 char    **rd_list_files(char *curr_dir, t_readline *rdl);
-void    print_match_lst(t_readline *rdl);
+void	rd_auto_compl(t_readline *rdl);
 
 #endif
