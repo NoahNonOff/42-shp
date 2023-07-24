@@ -1,4 +1,4 @@
-#include "shell.h"
+#include "readline.h"
 
 /*------------- proto ---------------*/
 void		write_prompt(char *prompt, int ret);
@@ -27,11 +27,11 @@ void	rd_files_manager(void)
 	int			fd;
 	struct stat	st = {0};
 
-	if (stat(".42sh", &st) == -1)
-		mkdir(".42sh", 0755);
-	if (access(".42sh/.history", F_OK) == -1)
+	if (stat(".rdlrc", &st) == -1)
+		mkdir(".rdlrc", 0755);
+	if (access(".rdlrc/.history", F_OK) == -1)
 	{
-		fd = open(".42sh/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
+		fd = open(".rdlrc/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
 		close(fd);
 	}
 }
@@ -41,7 +41,7 @@ void	add_history(char *line)
 	int	fd;
 
 	rd_files_manager();
-	fd = open(".42sh/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
+	fd = open(".rdlrc/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 		return ;
 	putstr_fd(line, fd);
@@ -53,7 +53,7 @@ void	clear_history(void)
 {
 	int	fd;
 
-	fd = open(".42sh/.history", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	fd = open(".rdlrc/.history", O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 		return ;
 	close(fd);
@@ -136,7 +136,7 @@ void	move_cursor(t_readline *rdl)
 
 	move = ft_strlen(rdl->line) - rdl->cursor;
 	for (int i = 0; i < move; i++)
-		printf("\033[1D");
+		write(1, "\033[1D", 4);
 	fflush(stdout);
 }
 
@@ -178,6 +178,7 @@ char	*readline(char *prompt, int ret)
 	char		c;
 	t_readline	rdl;
 
+	rd_files_manager();
 	rdl = readline_init(prompt);
 	write_prompt(prompt, ret);
 	write(1, "\0337", 2);

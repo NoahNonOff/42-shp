@@ -1,4 +1,4 @@
-#include "shell.h"
+#include "readline.h"
 
 /*------------- proto ---------------*/
 char	past_char(FILE *flux, int mode);
@@ -155,7 +155,7 @@ void	find_in_index(t_readline *rdl, int mode)
 
 	if (!rdl->flx && mode)
 	{
-		rdl->flux = new_flux(".42sh/.history", "a+");
+		rdl->flux = new_flux(".rdlrc/.history", "a+");
 		rdl->flx = 1;
 		str = read_first_line(rdl->flux);
 		if (str)
@@ -184,7 +184,7 @@ int	is_past_command(char *cmd)
 	char	*past_cmd;
 
 	ret = 1;
-	flux = new_flux(".42sh/.history", "a+");
+	flux = new_flux(".rdlrc/.history", "a+");
 	if (!flux)
 		return (0);
 	past_cmd = read_first_line(flux);
