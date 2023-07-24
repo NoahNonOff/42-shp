@@ -50,3 +50,29 @@ char	*rd_remove_one(char *line, int pos)
 	free(line);
 	return (newline);
 }
+
+char	**rd_tabPush(char **tab, char *to_add)
+{
+	int		len;
+	char	**ret;
+
+	len = 0;
+	while (tab && tab[len])
+		len++;
+	ret = malloc(sizeof(char *) * (len + 2));
+	if (!ret)
+		return (rd_free_tab(tab));
+	len = 0;
+	while (tab && tab[len])
+		ret[len] = tab[len];
+	ret[len] = rd_strdup(to_add);
+	if (!ret[len++])
+	{
+		free(ret);
+		return (rd_free_tab(tab));
+	}
+	ret[len] = NULL;
+	if (tab)
+		free(tab);
+	return (ret);
+}

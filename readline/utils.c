@@ -47,6 +47,22 @@ int	rd_comp(const char *s1, const char *s2)
 	return (t1[i] - t2[i]);
 }
 
+int	rd_compn(const char *s1, const char *s2, const int n)
+{
+	size_t			i;
+	unsigned char	*t1;
+	unsigned char	*t2;
+
+	i = 0;
+	if (!s1 || !s2)
+		return (-1);
+	t1 = (unsigned char *)s1;
+	t2 = (unsigned char *)s2;
+	while ((t1[i] && t2[i]) && (t1[i] == t2[i]) && (int)i < n)
+		i++;
+	return (t1[i] - t2[i]);
+}
+
 char	*rd_strdup(char *str)
 {
 	int		len;

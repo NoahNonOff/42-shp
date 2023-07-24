@@ -13,7 +13,8 @@
 SRCS	=	readline/utils.c				\
 			readline/funct.c				\
 			readline/readline.c				\
-			readline/read_history.c
+			readline/read_history.c			\
+			readline/auto_compl.c
 
 CC		=	gcc
 OBJS	=	${SRCS:.c=.o}
