@@ -78,8 +78,8 @@ char	*path_join(char const *s1, char const *s2)
 	char	*ret;
 
 	i = -1;
-	len1 = ft_strlen(s1);
-	len2 = ft_strlen(s2);
+	len1 = ft_strlen((char *)s1);
+	len2 = ft_strlen((char *)s2);
 	ret = malloc(sizeof(char) * (len1 + len2 + 1));
 	if (!ret)
 		return (NULL);

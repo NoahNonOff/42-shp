@@ -117,7 +117,7 @@ int	main(int ac, char **av, char **env)
 		return (2);
 	while (1)
 	{
-		str = readline("sh");
+		str = readline("test", g_shell.ret);
 		if (!str)
 			continue ;
 		if (comp(str, "\n"))

@@ -1,11 +1,9 @@
 #include "shell.h"
 
-extern t_simul	g_shell;
-
 /*------------- proto ---------------*/
-void		write_prompt(char *prompt);
+void		write_prompt(char *prompt, int ret);
 void		rd_files_manager(void);
-t_readline	readline_init(void);
+t_readline	readline_init(char *prompt);
 char		extract_char(void);
 void		do_delete(t_readline *rdl);
 void		do_backspace(t_readline *rdl);
@@ -13,13 +11,14 @@ void		move_cursor(t_readline *rdl);
 void		treat_char(char c, t_readline *rdl);
 
 /* ================================= */
-void	write_prompt(char *prompt)
+void	write_prompt(char *prompt, int ret)
 {
-	if (!g_shell.ret)
+	if (!ret)
 		putstr_fd("\x1B[1m\x1B[32m➜  \x1B[36m", FDOUT);
 	else
 		putstr_fd("\x1B[1m\x1B[31m➜  \x1B[36m", FDOUT);
-	putstr_fd(prompt, FDOUT);
+	if (prompt)
+		putstr_fd(prompt, FDOUT);
 	putstr_fd("\x1B[0m ", FDOUT);
 }
 
@@ -41,6 +40,7 @@ void	add_history(char *line)
 {
 	int	fd;
 
+	rd_files_manager();
 	fd = open(".42sh/.history", O_RDWR | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 		return ;
@@ -59,11 +59,14 @@ void	clear_history(void)
 	close(fd);
 }
 
-t_readline	readline_init(void)
+t_readline	readline_init(char *prompt)
 {
 	t_readline	ret;
 
-	ret.begin_pos = LEN_NAME + 3;
+	if (!prompt)
+		ret.begin_pos = 3;
+	else
+		ret.begin_pos = ft_strlen(prompt) + 3;
 	ret.cursor = 0;
 	ret.line = NULL;
 	ret.flx = 0;
@@ -170,18 +173,16 @@ void	treat_char(char c, t_readline *rdl)
 	move_cursor(rdl);
 }
 
-char	*readline(char *prompt)
+char	*readline(char *prompt, int ret)
 {
 	char		c;
 	t_readline	rdl;
 
-	rdl = readline_init();
-	rd_files_manager();
-	write_prompt(prompt);
+	rdl = readline_init(prompt);
+	write_prompt(prompt, ret);
 	write(1, "\0337", 2);
 	while ((c = extract_char()) && c != '\n')
 		treat_char(c, &rdl);
-	rd_files_manager();
 	close_flux(&rdl);
 	write(1, "\n", 1);
 	return (rdl.line);

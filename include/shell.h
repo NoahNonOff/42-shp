@@ -55,7 +55,7 @@ typedef struct
 void	free_glob(void);
 
 /*---------- readline -------------*/
-char	*readline(char *prompt);
+char	*readline(char *prompt, int ret);
 void	add_history(char *line);
 void	clear_history(void);
 void	close_flux(t_readline *rdl);
