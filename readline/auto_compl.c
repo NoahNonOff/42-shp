@@ -41,8 +41,8 @@ void	rd_auto_compl(t_readline *rdl)
 	if (!len)
 		return ;
 
-	rd_putstr_fd("\033[s", FDIN); // save pos
-	rd_putstr_fd("\033[J", FDIN); // efface tous apres le curseur
+	rd_putstr_fd("\033[s", FDIN); // Save cursor location
+	rd_putstr_fd("\033[J", FDIN); // Erase display (cursor -> END)
 
 	if (len == 1) {
 		free(rdl->line);
@@ -50,7 +50,7 @@ void	rd_auto_compl(t_readline *rdl)
 		rdl->cursor = rd_strlen(rdl->line);
 	}
 	else {
-		for (int i = 0; ret && ret[i]; i++) { // mult posibilities don't work
+		for (int i = 0; ret && ret[i]; i++) {
 			if (!(i % 6))
 				rd_putstr_fd("\n", FDIN);
 			rd_putstr_fd(ret[i], FDIN);
@@ -58,34 +58,14 @@ void	rd_auto_compl(t_readline *rdl)
 		}
 		rd_free_tab(ret);
 	}
-	rd_putstr_fd("\033[u", FDIN); // restore pos
+	rd_putstr_fd("\033[u", FDIN); // Restore cursor location
 }
 
-
-
-/*
-
-int	main(int ac, char **av)
+char	*rd_extract_word(t_readline *rdl, int *n)
 {
-	char	**ret;
-	t_readline	rdl = rd_readline_init("test");
+	int		i;
+	char	*ret;
 
-	rdl.line = "az";
-	rdl.cursor = 1;
-	rd_putstr_fd("->", 1);
-	write(1, "\0337", 2); // alrd
-	rd_putstr_fd("\033[s", 1); // save pos
-	rd_putstr_fd("\n", 1);
-	ret = rd_list_files(".", &rdl);
-	for (int i = 0; ret && ret[i]; i++)
-		printf("%s\t",ret[i]);
-	fflush(stdout);
-	rd_free_tab(ret);
-	rd_putstr_fd("\033[u", 1); // return to his pos
-	write(1, "\0338", 2); // alrd
-	write(1, "\033[K", 3); // alrd
-	sleep(2);
-	rd_putstr_fd("\033[J", 1); // efface tous apres le curseur
-
-	return (0);
-}*/
+	i = rdl->cursor;
+	while (rdl->line && i > -1)
+}

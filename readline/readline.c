@@ -149,7 +149,6 @@ void	rd_close_flux(t_readline *rdl)
 
 void	rd_treat_char(char c, t_readline *rdl)
 {
-	write(1, "\0338", 2);
 	if (c == -1) // up
 		rd_find_in_index(rdl, 1);
 	else if (c == -2) // down
@@ -169,7 +168,11 @@ void	rd_treat_char(char c, t_readline *rdl)
 		rdl->line = rd_cat_line(rdl->line, rdl->cursor++, c);
 		rd_close_flux(rdl);
 	}
-	write(1, "\033[K", 3);
+
+	printf("\033[%dG", rdl->begin_pos + 2); // set cursor to begin of line
+	fflush(stdout);
+	rd_putstr_fd("\033[K", FDIN); //  Erase line (cursor -> END line)
+
 	rd_putstr_fd(rdl->line, FDIN);
 	rd_move_cursor(rdl);
 }
@@ -182,15 +185,15 @@ char	*readline(char *prompt, int ret)
 	rd_files_manager();
 	rdl = rd_readline_init(prompt);
 	rd_write_prompt(prompt, ret);
-	write(1, "\0337", 2);
-	rd_putstr_fd("\033[s", FDIN);
+
 	while ((c = rd_extract_char()) && c != '\n')
 		rd_treat_char(c, &rdl);
 	rd_close_flux(&rdl);
 
-	for (;rdl.cursor < rd_strlen(rdl.line); rdl.cursor++)
+	for (;rdl.cursor < rd_strlen(rdl.line); rdl.cursor++) // set cursor to end of line
 		rd_putstr_fd("\033[1C", FDIN);
-	rd_putstr_fd("\033[J", 1);
+	rd_putstr_fd("\033[J", 1); // Erase display (cursor -> END)
+
 	write(1, "\n", 1);
 	return (rdl.line);
 }
