@@ -6,7 +6,7 @@ t_readline	rd_readline_init(char *prompt);
 
 /* ================================= */
 
-char	**rd_list_files(char *curr_dir, t_readline *rdl)
+char	**rd_list_files(char *curr_dir, char *line, int cursor)
 {
 	DIR				*dirp;
 	char			**ret;
@@ -19,7 +19,7 @@ char	**rd_list_files(char *curr_dir, t_readline *rdl)
 		entity = readdir(dirp);
 		if (!entity)
 			break ;
-		else if (rdl->cursor && rd_compn(rdl->line, entity->d_name, rdl->cursor - 1))
+		else if (cursor && rd_compn(line, entity->d_name, cursor - 1))
 			continue ;
 		ret = rd_tabPush(ret, entity->d_name);
 		if (!ret)
@@ -34,7 +34,7 @@ void	rd_auto_compl(t_readline *rdl)
 	int		len = 0;
 	char	**ret;
 
-	ret = rd_list_files(".", rdl);
+	ret = rd_list_files(".", rdl->line, rdl->cursor);
 	while (ret && ret[len])
 		len++;
 
@@ -61,11 +61,130 @@ void	rd_auto_compl(t_readline *rdl)
 	rd_putstr_fd("\033[u", FDIN); // Restore cursor location
 }
 
-char	*rd_extract_word(t_readline *rdl, int *n)
+int	rd_is_sep(char c)
+{
+	return ((c >= 9 && c <= 13) || c == ' ' || c == ';' || c == 34 || c == 39);
+}
+
+/* ================================================ */
+
+static int	rd_len_sep_string(const char *str)
+{
+	int	i;
+	int	counter;
+
+	i = 0;
+	counter = 0;
+	while (str[i])
+	{
+		while (rd_is_sep(str[i]))
+			i++;
+		if (!rd_is_sep(str[i]) && str[i])
+		{
+			counter++;
+			while (!rd_is_sep(str[i]) && str[i])
+				i++;
+		}
+	}
+	return (counter + 1);
+}
+
+static char	*rd_get_next_word(int *index, const char *str)
 {
 	int		i;
+	int		len;
 	char	*ret;
 
-	i = rdl->cursor;
-	while (rdl->line && i > -1)
+	i = 0;
+	len = 0;
+	while (rd_is_sep(str[*index]))
+		(*index)++;
+	while (!rd_is_sep(str[*index + len]) && str[*index + len])
+		len++;
+	ret = malloc((len + 1) * sizeof(char));
+	if (!ret)
+		return (NULL);
+	while (i < len)
+		ret[i++] = str[(*index)++];
+	ret[i] = 0;
+	return (ret);
 }
+
+char	**rd_splitLine(char const *s, int cursor, t_auto_compl *cmpl)
+{
+	int		i;
+	int		j;
+	int		ac;
+	char	**ret;
+
+	i = 0;
+	j = 0;
+	ac = rd_len_sep_string(s);
+	ret = malloc(ac * sizeof(char *));
+	if (!ret)
+		return (NULL);
+	while (i < ac - 1)
+	{
+		ret[i] = rd_get_next_word(&j, s);
+		if (cmpl->n == -1 && cursor <= j)
+		{
+			cmpl->n = i;
+			cmpl->pos = j - (rd_strlen(ret[i]) + 1);
+			if (1 == ac - 2)
+				cmpl->pos++;
+			cmpl->pos = cursor - cmpl->pos;
+		}
+		i++;
+	}
+	if (cmpl->pos < 0)
+		cmpl->n = -1;
+	ret[i] = NULL;
+	return (ret);
+}
+
+
+t_auto_compl	*rd_extract_word(char *line, int cursor)
+{
+	int				i;
+	t_auto_compl	*ret;
+
+	i = 0;
+	while (line[i] && rd_is_sep(line[i]))
+		i++;
+	if (!line[i])
+		return (NULL);
+
+	ret = malloc(sizeof(t_auto_compl));
+	if (!ret)
+		return (NULL);
+
+	ret->pos = -1;
+	ret->n = -1;
+
+	ret->words = rd_splitLine(line, cursor, ret);
+	if (!ret->words) {
+		free(ret);
+		return (NULL);
+	}
+	return (ret);
+}
+
+/* ========================================================= */
+/*
+int	main(int ac, char **av)
+{
+	if (ac != 3)
+		return (1);
+	t_auto_compl	*ptr = rd_extract_word(av[1], atoi(av[2]));
+
+	for (int i = 0; ptr->words && ptr->words[i]; i++)
+		printf("%s\n", ptr->words[i]);
+	printf("pos = %d\n", ptr->pos);
+	printf("n   = %d\n", ptr->n);
+
+	rd_free_tab(ptr->words);
+	free(ptr);
+
+	return (0);
+}
+*/

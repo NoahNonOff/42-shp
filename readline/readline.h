@@ -39,6 +39,13 @@ typedef struct
 	FILE	*flux;
 }	t_readline;
 
+typedef struct
+{
+	char	**words;
+	int		pos; // pos in word
+	int		n; // pos of word
+}	t_auto_compl;
+
 /* ========== protos ========== */
 
 /*---------- readline -------------*/
@@ -70,7 +77,7 @@ char	*rd_substring(char *str, int start, int end);
 char	*rd_read_one_line(int fd);
 
 /*---------- auto_compl ----------*/ /*      [beta]      */
-char    **rd_list_files(char *curr_dir, t_readline *rdl);
+char	**rd_list_files(char *curr_dir, char *line, int cursor);
 void	rd_auto_compl(t_readline *rdl);
-
+int		rd_is_sep(char c);
 #endif
