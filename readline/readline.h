@@ -41,43 +41,46 @@ typedef struct
 
 typedef struct
 {
-	char	**words;
-	int		pos; // pos in word
-	int		n; // pos of word
+	char	**words; // tableau avec toutes les chaines
+	int		pos; // index du curseur dans words[n]
+	int		n; // index du mots dans words
+	int		begin_word; // index du bebut du mot
 }	t_auto_compl;
 
 /* ========== protos ========== */
 
 /*---------- readline -------------*/
-char	*readline(char *prompt, int ret);
-void	add_history(char *line);
-void	clear_history(void);
-void	rd_close_flux(t_readline *rdl);
+char			*readline(char *prompt, int ret);
+void			add_history(char *line);
+void			clear_history(void);
+void			rd_close_flux(t_readline *rdl);
 
 /*--------- read_history ----------*/
-FILE	*rd_new_flux(char *name, char *mode);
-char	*rd_line_from_stream(FILE *flux, int mode);
-char	*rd_read_first_line(FILE *flux);
-void	rd_find_in_index(t_readline *rdl, int mode);
-int		rd_is_past_command(char *cmd);
+FILE			*rd_new_flux(char *name, char *mode);
+char			*rd_line_from_stream(FILE *flux, int mode);
+char			*rd_read_first_line(FILE *flux);
+void			rd_find_in_index(t_readline *rdl, int mode);
+int				rd_is_past_command(char *cmd);
 
 /*------------ funct -------------*/
-char	*rd_cat_line(char *line, int pos, char c);
-char	*rd_remove_one(char *line, int pos);
-char	**rd_tabPush(char **tab, char *to_add); // [beta]
+char			*rd_cat_line(char *line, int pos, char c);
+char			*rd_remove_one(char *line, int pos);
+char			**rd_tabPush(char **tab, char *to_add); // [beta]
 
 /*------------ utils -------------*/
-int		rd_strlen(char *str);
-void	rd_putstr_fd(char *str, int fd);
-void	*rd_free_tab(char **tab);
-int		rd_comp(const char *s1, const char *s2);
-int		rd_compn(const char *s1, const char *s2, const int n); // [beta]
-char	*rd_strdup(char *str);
-char	*rd_substring(char *str, int start, int end);
-char	*rd_read_one_line(int fd);
+int				rd_strlen(char *str);
+void			rd_putstr_fd(char *str, int fd);
+void			*rd_free_tab(char **tab);
+int				rd_comp(const char *s1, const char *s2);
+int				rd_compn(const char *s1, const char *s2, const int n); // [beta]
+char			*rd_strdup(char *str);
+char			*rd_substring(char *str, int start, int end);
+char			*rd_read_one_line(int fd);
 
 /*---------- auto_compl ----------*/ /*      [beta]      */
-char	**rd_list_files(char *curr_dir, char *line, int cursor);
-void	rd_auto_compl(t_readline *rdl);
-int		rd_is_sep(char c);
+t_auto_compl	*rd_extract_word(char *line, int cursor);
+char			**rd_list_files(char *curr_dir, char *line, int cursor);
+void			rd_auto_compl(t_readline *rdl);
+int				rd_is_sep(char c);
+
 #endif
