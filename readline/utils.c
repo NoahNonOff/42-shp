@@ -60,6 +60,8 @@ int	rd_compn(const char *s1, const char *s2, const int n)
 	t2 = (unsigned char *)s2;
 	while ((t1[i] && t2[i]) && (t1[i] == t2[i]) && (int)i < n)
 		i++;
+	if (!t1[i] && t2[i])
+		return (0);
 	return (t1[i] - t2[i]);
 }
 

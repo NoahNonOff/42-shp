@@ -65,7 +65,10 @@ int				rd_is_past_command(char *cmd);
 /*------------ funct -------------*/
 char			*rd_cat_line(char *line, int pos, char c);
 char			*rd_remove_one(char *line, int pos);
-char			**rd_tabPush(char **tab, char *to_add); // [beta]
+char			**rd_tabPush(char **tab, char *to_add);
+char			*rd_replace_words(char *line, int begin_word, char *repl);
+void			rd_print_files(char **files);
+void			rd_freeCompl(char **files, t_auto_compl *cmpl);
 
 /*------------ utils -------------*/
 int				rd_strlen(char *str);
@@ -79,8 +82,10 @@ char			*rd_read_one_line(int fd);
 
 /*---------- auto_compl ----------*/ /*      [beta]      */
 t_auto_compl	*rd_extract_word(char *line, int cursor);
-char			**rd_list_files(char *curr_dir, char *line, int cursor);
+char			**rd_list_files(char *curr_dir, char *line, int cursor, int (*cmp)());
+//char			**rd_list_files(char *curr_dir, char *line, int cursor);
 void			rd_auto_compl(t_readline *rdl);
 int				rd_is_sep(char c);
+void			rd_change_line(t_auto_compl *cmpl, char *repl, t_readline *rdl);
 
 #endif

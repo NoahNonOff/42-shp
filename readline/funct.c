@@ -77,3 +77,52 @@ char	**rd_tabPush(char **tab, char *to_add)
 		free(tab);
 	return (ret);
 }
+
+char	*rd_replace_words(char *line, int begin_word, char *repl)
+{
+	int		i;
+	int		len;
+	char	*ret;
+
+	i = begin_word;
+	len = begin_word;
+	while (line && line[i] && rd_is_sep(line[i]))
+		i++;
+	while (line && line[i++])
+		len++;
+	len += rd_strlen(repl);
+	ret = malloc(sizeof(char) * (len + 1));
+	if (!ret)
+		return (NULL);
+	for (i = 0; i < begin_word; i++)
+		ret[i] = line[i];
+	for (int j = 0; repl && repl[j]; j++)
+		ret[i++] = repl[j];
+	len = begin_word;
+	while (line && line[len] && !rd_is_sep(line[len]))
+		len++;
+	for (; line && line[len]; len++)
+		ret[i++] = line[len];
+	ret[i] = 0;
+	return (ret);
+}
+
+void	rd_print_files(char **files)
+{
+	for (int i = 0; files && files[i]; i++) {
+		if (!(i % 6))
+			rd_putstr_fd("\n", FDIN);
+		rd_putstr_fd(files[i], FDIN);
+		rd_putstr_fd("\t", FDIN);
+	}
+}
+
+void	rd_freeCompl(char **files, t_auto_compl *cmpl)
+{
+	if (cmpl)
+	{
+		rd_free_tab(cmpl->words);
+		free(cmpl);
+	}
+	rd_free_tab(files);
+}

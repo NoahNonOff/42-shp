@@ -6,7 +6,7 @@
 #    By: nbeaufil <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/19 15:08:19 by nbeaufil          #+#    #+#              #
-#    Updated: 2023/07/24 20:26:12 by nbeaufil         ###   ########.fr        #
+#    Updated: 2023/07/27 08:33:10 by nbeaufil         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ OBJS	=	${SRCS:.c=.o}
 NAME	=	libreadline.a
 FLAGS	=	-Wall -Wextra -Werror
 INCLUDE	=	-I readline
-DEBUG	=
+DEBUG	=	-g3
 
 .c.o	:
 	${CC} ${FLAGS} ${INCLUDE} ${DEBUG} -c $< -o ${<:.c=.o}

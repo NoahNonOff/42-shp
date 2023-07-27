@@ -6,7 +6,7 @@ t_readline	rd_readline_init(char *prompt);
 
 /* ================================= */
 
-char	**rd_list_files(char *curr_dir, char *line, int cursor)
+char	**rd_list_files(char *curr_dir, char *line, int cursor, int (*cmp)())
 {
 	DIR				*dirp;
 	char			**ret;
@@ -19,7 +19,7 @@ char	**rd_list_files(char *curr_dir, char *line, int cursor)
 		entity = readdir(dirp);
 		if (!entity)
 			break ;
-		else if (cursor && rd_compn(line, entity->d_name, cursor - 1))
+		else if (cursor && (*cmp)(line, entity->d_name, cursor - 1))
 			continue ;
 		ret = rd_tabPush(ret, entity->d_name);
 		if (!ret)
@@ -29,44 +29,12 @@ char	**rd_list_files(char *curr_dir, char *line, int cursor)
 	return (ret);
 }
 
-void	rd_auto_compl(t_readline *rdl)
-{
-	int		len = 0;
-	char	**ret;
-
-	ret = rd_list_files(".", rdl->line, rdl->cursor);
-	while (ret && ret[len])
-		len++;
-
-	if (!len)
-		return ;
-
-	rd_putstr_fd("\033[s", FDIN); // Save cursor location
-	rd_putstr_fd("\033[J", FDIN); // Erase display (cursor -> END)
-
-	if (len == 1) {
-		free(rdl->line);
-		rdl->line = ret[0];
-		rdl->cursor = rd_strlen(rdl->line);
-	}
-	else {
-		for (int i = 0; ret && ret[i]; i++) {
-			if (!(i % 6))
-				rd_putstr_fd("\n", FDIN);
-			rd_putstr_fd(ret[i], FDIN);
-			rd_putstr_fd("\t", FDIN);
-		}
-		rd_free_tab(ret);
-	}
-	rd_putstr_fd("\033[u", FDIN); // Restore cursor location
-}
-
-/* ================================================ */
-
 int	rd_is_sep(char c)
 {
 	return ((c >= 9 && c <= 13) || c == ' ' || c == ';' || c == 34 || c == 39);
 }
+
+/* ================================================ */
 
 static int	rd_len_sep_string(const char *str)
 {
@@ -75,7 +43,7 @@ static int	rd_len_sep_string(const char *str)
 
 	i = 0;
 	counter = 0;
-	while (str[i])
+	while (str && str[i])
 	{
 		while (rd_is_sep(str[i]))
 			i++;
@@ -151,9 +119,9 @@ t_auto_compl	*rd_extract_word(char *line, int cursor)
 	t_auto_compl	*ret;
 
 	i = 0;
-	while (line[i] && rd_is_sep(line[i]))
+	while (line && line[i] && rd_is_sep(line[i]))
 		i++;
-	if (!line[i])
+	if (line && !line[i])
 		return (NULL);
 
 	ret = malloc(sizeof(t_auto_compl));
@@ -171,72 +139,64 @@ t_auto_compl	*rd_extract_word(char *line, int cursor)
 	return (ret);
 }
 
-void	new_auto_compl(t_readline *rdl)
+int	rd_return_0(const char *s1, const char *s2, const int n)
+{
+	(void)s1;
+	(void)s2;
+	(void)n;
+	return (0);
+}
+
+void	rd_auto_compl(t_readline *rdl)
 {
 	int				len = 0;
 	char			**ret;
 	t_auto_compl	*cmpl;
 
-	cmpl = rd_extract_word(rdl->line, rdl->cursor);
-	if (cmpl)
-		return ;
+	if (!rdl->line) { // si la ligne est vide
+		ret = rd_list_files(".", NULL, 0, &rd_return_0);
+		cmpl = NULL;
+	}
+	else {
+		cmpl = rd_extract_word(rdl->line, rdl->cursor);
+		if (!cmpl)
+			return ;
 
-	if (cmpl->n == -1) {
-		free(cmpl);
-		return ;
+		if (cmpl->n == -1) { // pas sur un mot
+			free(cmpl);
+			return ;
+		}
+		ret = rd_list_files(".", cmpl->words[cmpl->n], cmpl->pos, &rd_compn);
 	}
 
-	ret = rd_list_files(".", cmpl->words[cmpl->n], cmpl->pos);
 	while (ret && ret[len])
 		len++;
 
-	if (!len) {
-		free(cmpl);
+	if (!len) { // rien ne correspond
+		rd_freeCompl(ret, cmpl);
 		return ;
 	}
-
 	rd_putstr_fd("\033[s", FDIN); // Save cursor location
 	rd_putstr_fd("\033[J", FDIN); // Erase display (cursor -> END)
+	if (len == 1)
+		rd_change_line(cmpl, ret[0], rdl);
+	if (len > 1)
+		rd_print_files(ret);
 
-	if (len == 1) {
-		// replace_word(cmpl, ret[0], rdl);
-	}
-	else {
-		for (int i = 0; ret && ret[i]; i++) {
-			if (!(i % 6))
-				rd_putstr_fd("\n", FDIN);
-			rd_putstr_fd(ret[i], FDIN);
-			rd_putstr_fd("\t", FDIN);
-		}
-	}
-	free(cmpl);
-	rd_free_tab(ret);
+	rd_freeCompl(ret, cmpl);
 	rd_putstr_fd("\033[u", FDIN); // Restore cursor location
 }
 
 /* ========================================================= */
 
-/*
-int	main(int ac, char **av)
+void	rd_change_line(t_auto_compl *cmpl, char *repl, t_readline *rdl)
 {
-	if (ac != 3)
-		return (1);
-	t_auto_compl	*ptr = rd_extract_word(av[1], atoi(av[2]));
+	char	*new_line;
 
-	for (int i = 0; ptr->words && ptr->words[i]; i++)
-		printf("%s\n", ptr->words[i]);
-	printf("pos = %d\n", ptr->pos);
-	printf("n = %d\n", ptr->n);
-	printf("begin_word = %d\n", ptr->begin_word);
-
-	char	**ret = rd_list_files(".", ptr->words[ptr->n], ptr->pos);
-	for (int i = 0; ret && ret[i]; i++)
-		printf("%s\n", ret[i]);
-
-	rd_free_tab(ret);
-	rd_free_tab(ptr->words);
-	free(ptr);
-
-	return (0);
+	new_line = rd_replace_words(rdl->line, cmpl->begin_word, repl);
+	if (!new_line)
+		return ;
+	free(rdl->line);
+	rdl->line = new_line;
+	rdl->cursor = cmpl->begin_word + rd_strlen(repl);
 }
-*/
