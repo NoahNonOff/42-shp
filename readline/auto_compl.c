@@ -1,10 +1,15 @@
 #include "readline.h"
 
-t_readline	rd_readline_init(char *prompt);
-
 /*------------- proto ---------------*/
+static int	rd_len_sep_string(const char *str);
+static char	*rd_get_next_word(int *index, const char *str, int *tmp);
 
 /* ================================= */
+
+int	rd_is_sep(char c)
+{
+	return ((c >= 9 && c <= 13) || c == ' ' || c == ';' || c == 34 || c == 39);
+}
 
 char	**rd_list_files(char *curr_dir, char *line, int cursor, int (*cmp)())
 {
@@ -28,13 +33,6 @@ char	**rd_list_files(char *curr_dir, char *line, int cursor, int (*cmp)())
 	closedir(dirp);
 	return (ret);
 }
-
-int	rd_is_sep(char c)
-{
-	return ((c >= 9 && c <= 13) || c == ' ' || c == ';' || c == 34 || c == 39);
-}
-
-/* ================================================ */
 
 static int	rd_len_sep_string(const char *str)
 {
@@ -139,6 +137,18 @@ t_auto_compl	*rd_extract_word(char *line, int cursor)
 	return (ret);
 }
 
+void	rd_change_line(t_auto_compl *cmpl, char *repl, t_readline *rdl)
+{
+	char	*new_line;
+
+	new_line = rd_replace_words(rdl->line, cmpl->begin_word, repl);
+	if (!new_line)
+		return ;
+	free(rdl->line);
+	rdl->line = new_line;
+	rdl->cursor = cmpl->begin_word + rd_strlen(repl);
+}
+
 int	rd_return_0(const char *s1, const char *s2, const int n)
 {
 	(void)s1;
@@ -153,7 +163,9 @@ void	rd_auto_compl(t_readline *rdl)
 	char			**ret;
 	t_auto_compl	*cmpl;
 
-	if (!rdl->line) { // si la ligne est vide
+	rd_putstr_fd("\033[J", FDIN); // Erase display (cursor -> END)
+
+	if (!rdl->line) { // if empty line
 		ret = rd_list_files(".", NULL, 0, &rd_return_0);
 		cmpl = NULL;
 	}
@@ -162,7 +174,7 @@ void	rd_auto_compl(t_readline *rdl)
 		if (!cmpl)
 			return ;
 
-		if (cmpl->n == -1) { // pas sur un mot
+		if (cmpl->n == -1) { // cursor not on word
 			free(cmpl);
 			return ;
 		}
@@ -172,12 +184,11 @@ void	rd_auto_compl(t_readline *rdl)
 	while (ret && ret[len])
 		len++;
 
-	if (!len) { // rien ne correspond
+	if (!len) { // nothing match
 		rd_freeCompl(ret, cmpl);
 		return ;
 	}
 	rd_putstr_fd("\033[s", FDIN); // Save cursor location
-	rd_putstr_fd("\033[J", FDIN); // Erase display (cursor -> END)
 	if (len == 1)
 		rd_change_line(cmpl, ret[0], rdl);
 	if (len > 1)
@@ -185,18 +196,4 @@ void	rd_auto_compl(t_readline *rdl)
 
 	rd_freeCompl(ret, cmpl);
 	rd_putstr_fd("\033[u", FDIN); // Restore cursor location
-}
-
-/* ========================================================= */
-
-void	rd_change_line(t_auto_compl *cmpl, char *repl, t_readline *rdl)
-{
-	char	*new_line;
-
-	new_line = rd_replace_words(rdl->line, cmpl->begin_word, repl);
-	if (!new_line)
-		return ;
-	free(rdl->line);
-	rdl->line = new_line;
-	rdl->cursor = cmpl->begin_word + rd_strlen(repl);
 }

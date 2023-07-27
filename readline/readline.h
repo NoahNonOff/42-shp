@@ -41,10 +41,10 @@ typedef struct
 
 typedef struct
 {
-	char	**words; // tableau avec toutes les chaines
-	int		pos; // index du curseur dans words[n]
-	int		n; // index du mots dans words
-	int		begin_word; // index du bebut du mot
+	char	**words;
+	int		pos;
+	int		n;
+	int		begin_word;
 }	t_auto_compl;
 
 /* ========== protos ========== */
@@ -83,7 +83,7 @@ char			*rd_read_one_line(int fd);
 /*---------- auto_compl ----------*/ /*      [beta]      */
 t_auto_compl	*rd_extract_word(char *line, int cursor);
 char			**rd_list_files(char *curr_dir, char *line, int cursor, int (*cmp)());
-//char			**rd_list_files(char *curr_dir, char *line, int cursor);
+char			**rd_splitLine(char const *s, int cursor, t_auto_compl *cmpl);
 void			rd_auto_compl(t_readline *rdl);
 int				rd_is_sep(char c);
 void			rd_change_line(t_auto_compl *cmpl, char *repl, t_readline *rdl);

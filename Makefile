@@ -21,7 +21,7 @@ OBJS	=	${SRCS:.c=.o}
 NAME	=	libreadline.a
 FLAGS	=	-Wall -Wextra -Werror
 INCLUDE	=	-I readline
-DEBUG	=	-g3
+DEBUG	=
 
 .c.o	:
 	${CC} ${FLAGS} ${INCLUDE} ${DEBUG} -c $< -o ${<:.c=.o}
