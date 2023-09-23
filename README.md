@@ -1,4 +1,4 @@
-# Readline (library)
+# Readline (_library)
 This project aim to recreate the C readline library, it main functions and functionality<br>
 In the original library, `readline()` leaks a lot, so I decided to redo it WITHOUT any leaks
 ```
